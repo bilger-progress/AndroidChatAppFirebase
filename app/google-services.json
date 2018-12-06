@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "955727837842",
+    "firebase_url": "https://baaschatappfirebase.firebaseio.com",
+    "project_id": "baaschatappfirebase",
+    "storage_bucket": "baaschatappfirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955727837842:android:74a30a379c1cf6f3",
+        "android_client_info": {
+          "package_name": "com.yahov.flashchatnewfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "955727837842-3a4sbrlhdsi3nkd2f0gluvcrv9raga5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuqTeeA89XUAavxO_yTfLkQTxxbdg6biY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
