@@ -1,8 +1,11 @@
 package com.yahov.flashchatnewfirebase;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -10,14 +13,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
-
     // Constants
     public static final String CHAT_PREFS = "ChatPrefs";
     public static final String DISPLAY_NAME_KEY = "username";
 
-    // TODO: Add member variables here:
     // UI references.
     private AutoCompleteTextView mEmailView;
     private AutoCompleteTextView mUsernameView;
@@ -25,8 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mConfirmPasswordView;
 
     // Firebase instance variables
-
-
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,21 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         mConfirmPasswordView = (EditText) findViewById(R.id.register_confirm_password);
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.register_username);
 
-        // Keyboard sign in action
-        mConfirmPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.integer.register_form_finished || id == EditorInfo.IME_NULL) {
-                    attemptRegistration();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        // TODO: Get hold of an instance of FirebaseAuth
-
-
+        mAuth = FirebaseAuth.getInstance();
     }
 
     // Executed when Sign Up button is pressed.
@@ -61,7 +51,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void attemptRegistration() {
-
         // Reset errors displayed in the form.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -96,30 +85,43 @@ public class RegisterActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // TODO: Call create FirebaseUser() here
-
+            createFirebaseUser();
         }
     }
 
     private boolean isEmailValid(String email) {
-        // You can add more checking logic here.
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Add own logic to check for a valid password (minimum 6 characters)
-        return true;
+        String confirmPassword = mConfirmPasswordView.getText().toString();
+        return confirmPassword.equals(password) && password.length() > 6;
     }
 
-    // TODO: Create a Firebase user
+    private void createFirebaseUser () {
+        String email =  mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d("FlashChat", "createUser onComplete: " + task.isSuccessful());
 
+                if (!task.isSuccessful()) {
+                    Log.d("FlashChat", "user creation failed");
+                    showErrorDialog("Registration attempt failed!");
+                }
+            }
+        });
+    }
 
     // TODO: Save the display name to Shared Preferences
 
-
-    // TODO: Create an alert dialog to show in case registration failed
-
-
-
-
+    private void showErrorDialog (String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Oops")
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
 }
