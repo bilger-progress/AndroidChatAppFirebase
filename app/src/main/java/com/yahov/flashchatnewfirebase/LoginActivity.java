@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("FlashChat", "signInWithEmailPassword() onComplete: " + task.isSuccessful());
 
                 if (!task.isSuccessful()) {
-                    Log.d("FlashChat", "user login failed: " + task.getException());
+                    Log.d("FlashChat", "User login failed: " + task.getException());
                     showErrorDialog("Login attempt failed!");
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainChatActivity.class);
