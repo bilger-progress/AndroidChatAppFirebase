@@ -21,6 +21,7 @@ public class MainChatActivity extends AppCompatActivity {
     private ListView mChatListView;
     private EditText mInputText;
     private ImageButton mSendButton;
+    private ChatListAdapter mChatListAdapter;
 
     // Firebase BaaS private fields.
     private DatabaseReference mDatabaseReference;
@@ -37,9 +38,9 @@ public class MainChatActivity extends AppCompatActivity {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Link the Views in the layout to the Java code
-        mInputText = (EditText) findViewById(R.id.messageInput);
-        mSendButton = (ImageButton) findViewById(R.id.sendButton);
-        mChatListView = (ListView) findViewById(R.id.chat_list_view);
+        mInputText = findViewById(R.id.messageInput);
+        mSendButton = findViewById(R.id.sendButton);
+        mChatListView = findViewById(R.id.chat_list_view);
 
         // Send message on User pressing "Enter".
         mInputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -76,15 +77,17 @@ public class MainChatActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: Override the onStart() lifecycle method. Setup the adapter here.
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        mChatListAdapter = new ChatListAdapter(this, mDatabaseReference, mDisplayName);
+        mChatListView.setAdapter(mChatListAdapter);
+    }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        // TODO: Remove the Firebase event listener on the adapter.
-
+        mChatListAdapter.cleanup();
     }
 
 }
