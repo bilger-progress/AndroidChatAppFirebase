@@ -1,7 +1,6 @@
 package com.yahov.flashchatnewfirebase;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -16,11 +15,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class RegisterActivity extends AppCompatActivity {
-    // Constants
-    public static final String CHAT_PREFS = "ChatPrefs";
-    public static final String DISPLAY_NAME_KEY = "username";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -36,10 +34,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.register_email);
-        mPasswordView = (EditText) findViewById(R.id.register_password);
-        mConfirmPasswordView = (EditText) findViewById(R.id.register_confirm_password);
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.register_username);
+        mEmailView = findViewById(R.id.register_email);
+        mPasswordView = findViewById(R.id.register_password);
+        mConfirmPasswordView = findViewById(R.id.register_confirm_password);
+        mUsernameView = findViewById(R.id.register_username);
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -119,9 +117,22 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveDisplayName () {
+        FirebaseUser user = mAuth.getCurrentUser();
         String displayName = mUsernameView.getText().toString();
-        SharedPreferences prefs = getSharedPreferences(CHAT_PREFS, 0);
-        prefs.edit().putString(DISPLAY_NAME_KEY, displayName).apply();
+        if (user !=null) {
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(displayName)
+                    .build();
+            user.updateProfile(profileUpdates)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("FlashChat", "User name updated.");
+                            }
+                        }
+                    });
+        }
     }
 
     private void showErrorDialog (String message) {

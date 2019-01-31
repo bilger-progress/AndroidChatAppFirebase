@@ -1,6 +1,5 @@
 package com.yahov.flashchatnewfirebase;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,6 +10,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -62,9 +63,12 @@ public class MainChatActivity extends AppCompatActivity {
     }
 
     private void setupDisplayName() {
-        SharedPreferences prefs = getSharedPreferences(RegisterActivity.CHAT_PREFS, MODE_PRIVATE);
-        mDisplayName = prefs.getString(RegisterActivity.DISPLAY_NAME_KEY, null);
-        if (mDisplayName == null) mDisplayName = "Anonymous";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            mDisplayName = user.getDisplayName();
+        } else {
+            mDisplayName = "Anonymous";
+        }
     }
 
     private void sendMessage() {
